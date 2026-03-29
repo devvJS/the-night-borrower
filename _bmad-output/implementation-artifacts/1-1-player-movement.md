@@ -1,6 +1,6 @@
 # Story 1.1: Player Movement
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -58,12 +58,12 @@ so that I can explore the space.
   - [x] 7.2 Add `OnPlayerEnteredZone` event (used by PlayerController with zone triggers)
   - [x] 7.3 Add `OnObjectInspected` event placeholder (for Story 1.3)
   - [x] 7.4 Other events left as commented placeholders — will be uncommented by future stories
-- [ ] Task 8: Manual testing verification (AC: 1, 2, 3) — **Requires Unity Editor; to be verified by user**
-  - [ ] 8.1 Enter play mode, verify WASD moves player relative to facing direction
-  - [ ] 8.2 Verify mouse look rotates camera smoothly with no jitter
-  - [ ] 8.3 Walk into walls/obstacles and confirm no clipping through colliders
-  - [ ] 8.4 Verify Shift sprint increases speed noticeably
-  - [ ] 8.5 Verify vertical look is clamped and cannot flip camera
+- [X] Task 8: Manual testing verification (AC: 1, 2, 3) — **Requires Unity Editor; to be verified by user**
+  - [x] 8.1 Enter play mode, verify WASD moves player relative to facing direction
+  - [x] 8.2 Verify mouse look rotates camera smoothly with no jitter
+  - [X] 8.3 Walk into walls/obstacles and confirm no clipping through colliders
+  - [X] 8.4 Verify Shift sprint increases speed noticeably
+  - [X] 8.5 Verify vertical look is clamped and cannot flip camera
 
 ## Dev Notes
 
