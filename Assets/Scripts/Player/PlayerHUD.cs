@@ -70,6 +70,15 @@ public class PlayerHUD : MonoBehaviour
         {
             if (playerController.CurrentHighlighted.IsDisplaced)
                 promptText.text = "E: Organize";
+            else if (playerController.CurrentHighlighted.Fixture != null
+                     && !playerController.CurrentHighlighted.Fixture.IsFunctional
+                     && !playerController.CurrentHighlighted.Fixture.IsRepairing)
+            {
+                if (playerController.SpareBulbs > 0)
+                    promptText.text = "E: Replace Bulb";
+                else
+                    promptText.text = "Needs Bulb";
+            }
             else if (playerController.CurrentHighlighted.IsInspectable)
                 promptText.text = "E: Inspect";
             else

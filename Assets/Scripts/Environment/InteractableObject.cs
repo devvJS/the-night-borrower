@@ -37,6 +37,7 @@ public class InteractableObject : MonoBehaviour
     private string lastInspectedState = "";
     private bool isDisplaced;
     private Coroutine organizeCoroutine;
+    private LightFixture lightFixture;
 
     private Renderer objectRenderer;
     private Material materialInstance;
@@ -61,6 +62,7 @@ public class InteractableObject : MonoBehaviour
     public bool HasBeenInspected => hasBeenInspected;
     public bool IsDisplaced => isDisplaced;
     public bool IsOrganizing => organizeCoroutine != null;
+    public LightFixture Fixture => lightFixture;
 
     public event Action<InteractableObject> OnInteracted;
 
@@ -81,6 +83,8 @@ public class InteractableObject : MonoBehaviour
             homeRotation = transform.rotation;
             isDisplaced = false;
         }
+
+        lightFixture = GetComponent<LightFixture>();
     }
 
     private void OnDestroy()

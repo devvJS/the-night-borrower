@@ -31,9 +31,11 @@ public class PlayerController : MonoBehaviour
 
     private bool isInteracting;
     private bool inputEnabled = true;
+    private int spareBulbs = GameConstants.StartingBulbCount;
 
     public InteractableObject CurrentHighlighted => currentHighlighted;
     public bool IsInteracting => isInteracting;
+    public int SpareBulbs => spareBulbs;
 
     // Input Actions
     private InputAction moveAction;
@@ -178,6 +180,18 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        // Broken fixtures: repair takes priority over inspect
+        if (currentHighlighted.Fixture != null
+            && !currentHighlighted.Fixture.IsFunctional
+            && !currentHighlighted.Fixture.IsRepairing)
+        {
+            if (TryUseBulb())
+            {
+                currentHighlighted.Fixture.Repair();
+            }
+            return;
+        }
+
         // Inspectable objects are handled by InspectionSystem
         if (currentHighlighted.IsInspectable) return;
 
@@ -190,6 +204,13 @@ public class PlayerController : MonoBehaviour
     public void OnInteractionComplete()
     {
         isInteracting = false;
+    }
+
+    public bool TryUseBulb()
+    {
+        if (spareBulbs <= 0) return false;
+        spareBulbs--;
+        return true;
     }
 
     public void SetInputEnabled(bool enabled)

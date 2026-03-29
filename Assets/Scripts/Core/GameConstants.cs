@@ -74,4 +74,8 @@ public static class GameConstants
     // ─── Organize ───
     public const float OrganizeAnimationDuration = 0.5f;
     public const float OrganizePromptDistance = 3.0f;
+
+    // ─── Light Fixtures ───
+    public const float BulbReplaceAnimationDuration = 0.8f;
+    public const int StartingBulbCount = 3;
 }
