@@ -41,4 +41,10 @@ public static class GameConstants
     public const float FlashlightSpotAngle = 45f;
     public const float FlashlightInnerSpotAngle = 25f;
     public const float FlashlightIntensity = 1.5f;
+
+    // ─── Observation ───
+    public const float ObservationRange = 8.0f;
+    public const float ObservationHighlightIntensity = 0.35f;
+    public const float ObservationFadeDuration = 0.4f;
+    public const float ObservationViewAngle = 30f;
 }

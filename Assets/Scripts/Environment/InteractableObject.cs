@@ -14,14 +14,22 @@ public class InteractableObject : MonoBehaviour
     [SerializeField] private Color highlightColor = new Color(1.0f, 0.95f, 0.8f);
     [SerializeField] private float emissionIntensity = GameConstants.HighlightEmissionIntensity;
 
+    [Header("Observation")]
+    [SerializeField] private bool isImportant;
+    [SerializeField] private Color observationColor = new Color(0.6f, 0.8f, 1.0f);
+
     private Renderer objectRenderer;
     private Material materialInstance;
     private Coroutine fadeCoroutine;
+    private Coroutine observationFadeCoroutine;
     private bool isHighlighted;
+    private bool isObservationHighlighted;
 
     public string ObjectId => objectId;
     public new ObjectType Type => objectType;
     public bool IsHighlighted => isHighlighted;
+    public bool IsImportant => isImportant;
+    public bool IsObservationHighlighted => isObservationHighlighted;
 
     public event Action<InteractableObject> OnInteracted;
 
@@ -38,6 +46,16 @@ public class InteractableObject : MonoBehaviour
         if (materialInstance != null)
         {
             Destroy(materialInstance);
+        }
+    }
+
+    public void SetImportant(bool important)
+    {
+        if (isImportant == important) return;
+        isImportant = important;
+        if (!important && isObservationHighlighted)
+        {
+            ObservationUnhighlight();
         }
     }
 
@@ -65,6 +83,37 @@ public class InteractableObject : MonoBehaviour
         fadeCoroutine = StartCoroutine(FadeHighlight());
     }
 
+    public void ObservationHighlight()
+    {
+        if (isObservationHighlighted) return;
+        isObservationHighlighted = true;
+
+        if (isHighlighted) return;
+
+        if (observationFadeCoroutine != null)
+        {
+            StopCoroutine(observationFadeCoroutine);
+            observationFadeCoroutine = null;
+        }
+
+        materialInstance.EnableKeyword("_EMISSION");
+        materialInstance.SetColor(EmissionColorId, observationColor * GameConstants.ObservationHighlightIntensity);
+    }
+
+    public void ObservationUnhighlight()
+    {
+        if (!isObservationHighlighted) return;
+        isObservationHighlighted = false;
+
+        if (isHighlighted) return;
+
+        if (observationFadeCoroutine != null)
+        {
+            StopCoroutine(observationFadeCoroutine);
+        }
+        observationFadeCoroutine = StartCoroutine(FadeObservationHighlight());
+    }
+
     public void Interact()
     {
         Debug.Log($"Interacted with {objectId} ({objectType})");
@@ -85,8 +134,35 @@ public class InteractableObject : MonoBehaviour
         }
 
         materialInstance.SetColor(EmissionColorId, Color.black);
-        materialInstance.DisableKeyword("_EMISSION");
         isHighlighted = false;
         fadeCoroutine = null;
+
+        if (isObservationHighlighted)
+        {
+            materialInstance.EnableKeyword("_EMISSION");
+            materialInstance.SetColor(EmissionColorId, observationColor * GameConstants.ObservationHighlightIntensity);
+        }
+        else
+        {
+            materialInstance.DisableKeyword("_EMISSION");
+        }
+    }
+
+    private IEnumerator FadeObservationHighlight()
+    {
+        Color startColor = materialInstance.GetColor(EmissionColorId);
+        float elapsed = 0f;
+
+        while (elapsed < GameConstants.ObservationFadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / GameConstants.ObservationFadeDuration;
+            materialInstance.SetColor(EmissionColorId, Color.Lerp(startColor, Color.black, t));
+            yield return null;
+        }
+
+        materialInstance.SetColor(EmissionColorId, Color.black);
+        materialInstance.DisableKeyword("_EMISSION");
+        observationFadeCoroutine = null;
     }
 }
