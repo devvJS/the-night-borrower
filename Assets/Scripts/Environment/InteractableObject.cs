@@ -39,6 +39,7 @@ public class InteractableObject : MonoBehaviour
     private bool isObservationHighlighted;
 
     public string ObjectId => objectId;
+    public string DisplayName => FormatDisplayName(objectId);
     public new ObjectType Type => objectType;
     public bool IsHighlighted => isHighlighted;
     public bool IsImportant => isImportant;

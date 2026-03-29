@@ -62,4 +62,12 @@ public static class GameConstants
     public const float InspectionBodyFontSize = 16f;
     public const float InspectionPanelFadeDuration = 0.3f;
     public const float InspectionChangedBadgeFontSize = 14f;
+
+    // ─── Discovery Notification ───
+    public const float NotificationFontSize = 14f;
+    public const float NotificationFadeInDuration = 0.3f;
+    public const float NotificationDisplayDuration = 2.5f;
+    public const float NotificationFadeOutDuration = 0.5f;
+    public const float NotificationVerticalOffset = 60f;
+    public const float NotificationPanelWidth = 350f;
 }

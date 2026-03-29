@@ -8,6 +8,8 @@ public class PlayerHUD : MonoBehaviour
 
     private InspectionSystem inspectionSystem;
     private InspectionUI inspectionUI;
+    private DiscoveryNotificationUI discoveryNotificationUI;
+    private DiscoveryLog discoveryLog;
     private GameObject promptObject;
     private TextMeshProUGUI promptText;
     private GameObject crosshairObject;
@@ -17,6 +19,7 @@ public class PlayerHUD : MonoBehaviour
     private bool wasShowingPrompt;
 
     public InspectionUI InspectionUI => inspectionUI;
+    public DiscoveryNotificationUI DiscoveryNotificationUI => discoveryNotificationUI;
 
     private void Awake()
     {
@@ -34,10 +37,17 @@ public class PlayerHUD : MonoBehaviour
         inspectionSystem = playerController.GetComponent<InspectionSystem>();
 
         BuildHUD();
+
+        discoveryLog = FindObjectOfType<DiscoveryLog>();
+        if (discoveryLog != null)
+            discoveryLog.OnDiscoveryLogged += discoveryNotificationUI.ShowNotification;
     }
 
     private void OnDestroy()
     {
+        if (discoveryLog != null)
+            discoveryLog.OnDiscoveryLogged -= discoveryNotificationUI.ShowNotification;
+
         if (crosshairSprite != null)
         {
             Destroy(crosshairSprite);
@@ -152,5 +162,9 @@ public class PlayerHUD : MonoBehaviour
         // Create Inspection UI
         inspectionUI = gameObject.AddComponent<InspectionUI>();
         inspectionUI.Initialize(canvas);
+
+        // Create Discovery Notification UI
+        discoveryNotificationUI = gameObject.AddComponent<DiscoveryNotificationUI>();
+        discoveryNotificationUI.Initialize(canvas);
     }
 }
