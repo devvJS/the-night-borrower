@@ -15,6 +15,12 @@ public static class GameConstants
     public const float HighlightEmissionIntensity = 0.3f;
     // HighlightColor: default warm white (1.0, 0.95, 0.8) — set via InteractableObject inspector since Color cannot be const
 
+    // ─── Performance Baseline ───
+    public const int TargetFPS = 60;
+    public const int MinimumFPS = 30;
+    public const float MaxLoadTimeSeconds = 5.0f;
+    public const float FPSLogIntervalSeconds = 10.0f;
+
     // ─── Lighting Baseline ───
     public const float AmbientLightIntensity = 0.15f;
     public const float CeilingLightIntensity = 1.2f;

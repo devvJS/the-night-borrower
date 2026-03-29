@@ -21,5 +21,6 @@ public enum LogCategory
     Save        = 1 << 5,
     Ending      = 1 << 6,
     Narrative   = 1 << 7,
+    Performance = 1 << 8,
     All         = ~0
 }
