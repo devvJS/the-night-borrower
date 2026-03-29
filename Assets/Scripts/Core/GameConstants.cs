@@ -14,4 +14,10 @@ public static class GameConstants
     public const float HighlightFadeDuration = 0.2f;
     public const float HighlightEmissionIntensity = 0.3f;
     // HighlightColor: default warm white (1.0, 0.95, 0.8) — set via InteractableObject inspector since Color cannot be const
+
+    // ─── Lighting Baseline ───
+    public const float AmbientLightIntensity = 0.15f;
+    public const float CeilingLightIntensity = 1.2f;
+    public const float DeskLampIntensity = 0.6f;
+    public const float CeilingLightRange = 7.0f;
 }
