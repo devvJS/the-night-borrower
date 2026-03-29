@@ -35,4 +35,10 @@ public static class GameConstants
 
     // ─── Save ───
     public const string SaveFileName = "nightborrower_save.json";
+
+    // ─── Flashlight ───
+    public const float FlashlightRange = 15f;
+    public const float FlashlightSpotAngle = 45f;
+    public const float FlashlightInnerSpotAngle = 25f;
+    public const float FlashlightIntensity = 1.5f;
 }
