@@ -32,4 +32,7 @@ public static class GameConstants
     public const float CrosshairAlpha = 0.6f;
     public const float PromptFontSize = 18f;
     public const float PromptVerticalOffset = 40f;
+
+    // ─── Save ───
+    public const string SaveFileName = "nightborrower_save.json";
 }
