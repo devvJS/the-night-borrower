@@ -37,6 +37,7 @@ public static class GameEvents
     // ─── Player ───
     public static event Action<string> OnPlayerEnteredZone;                 // (zoneId)
     public static event Action<string> OnObjectInspected;                   // (objectId)
+    public static event Action<string> OnObjectHighlighted;                 // (objectId or null when unhighlighted)
 
     // ─── Invoke helpers (null-safe) ───
     public static void PhaseChanged(GamePhase oldPhase, GamePhase newPhase)
@@ -91,4 +92,6 @@ public static class GameEvents
         => OnPlayerEnteredZone?.Invoke(zoneId);
     public static void ObjectInspected(string objectId)
         => OnObjectInspected?.Invoke(objectId);
+    public static void ObjectHighlighted(string objectId)
+        => OnObjectHighlighted?.Invoke(objectId);
 }

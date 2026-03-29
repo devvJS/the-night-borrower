@@ -26,4 +26,10 @@ public static class GameConstants
     public const float CeilingLightIntensity = 1.2f;
     public const float DeskLampIntensity = 0.6f;
     public const float CeilingLightRange = 7.0f;
+
+    // ─── UI ───
+    public const float CrosshairSize = 8f;
+    public const float CrosshairAlpha = 0.6f;
+    public const float PromptFontSize = 18f;
+    public const float PromptVerticalOffset = 40f;
 }

@@ -144,6 +144,7 @@ public class PlayerController : MonoBehaviour
                     }
                     currentHighlighted = interactable;
                     currentHighlighted.Highlight();
+                    GameEvents.ObjectHighlighted(currentHighlighted.ObjectId);
                 }
                 return;
             }
@@ -154,6 +155,7 @@ public class PlayerController : MonoBehaviour
         {
             currentHighlighted.Unhighlight();
             currentHighlighted = null;
+            GameEvents.ObjectHighlighted(null);
         }
     }
 
