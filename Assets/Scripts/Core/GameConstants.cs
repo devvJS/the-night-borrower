@@ -8,4 +8,10 @@ public static class GameConstants
     public const float VerticalLookClamp = 80f;
     public const float MouseSensitivityScale = 0.1f;
     public const float GroundedDownForce = -2f;
+
+    // ─── Object Highlighting ───
+    public const float InteractionRange = 3.0f;
+    public const float HighlightFadeDuration = 0.2f;
+    public const float HighlightEmissionIntensity = 0.3f;
+    // HighlightColor: default warm white (1.0, 0.95, 0.8) — set via InteractableObject inspector since Color cannot be const
 }

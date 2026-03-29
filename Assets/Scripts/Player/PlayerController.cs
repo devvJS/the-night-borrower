@@ -12,6 +12,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float mouseSensitivity = GameConstants.MouseSensitivity;
     [SerializeField] private float verticalLookClamp = GameConstants.VerticalLookClamp;
 
+    [Header("Interaction")]
+    [SerializeField] private float interactionRange = GameConstants.InteractionRange;
+    [SerializeField] private LayerMask interactableLayer = ~0;
+
     [Header("Physics")]
     [SerializeField] private float gravity = GameConstants.Gravity;
 
@@ -23,6 +27,9 @@ public class PlayerController : MonoBehaviour
     private bool isSprinting;
     private float verticalVelocity;
     private float cameraPitch;
+    private InteractableObject currentHighlighted;
+
+    public InteractableObject CurrentHighlighted => currentHighlighted;
 
     // Input Actions
     private InputAction moveAction;
@@ -68,6 +75,7 @@ public class PlayerController : MonoBehaviour
     {
         ReadInput();
         HandleMouseLook();
+        HandleHighlighting();
         HandleMovement();
     }
 
@@ -106,6 +114,37 @@ public class PlayerController : MonoBehaviour
         cameraPitch -= mouseY;
         cameraPitch = Mathf.Clamp(cameraPitch, -verticalLookClamp, verticalLookClamp);
         cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
+    }
+
+    private void HandleHighlighting()
+    {
+        Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactableLayer))
+        {
+            InteractableObject interactable = hit.collider.GetComponent<InteractableObject>();
+
+            if (interactable != null)
+            {
+                if (interactable != currentHighlighted)
+                {
+                    if (currentHighlighted != null)
+                    {
+                        currentHighlighted.Unhighlight();
+                    }
+                    currentHighlighted = interactable;
+                    currentHighlighted.Highlight();
+                }
+                return;
+            }
+        }
+
+        // Ray hit nothing or a non-interactable
+        if (currentHighlighted != null)
+        {
+            currentHighlighted.Unhighlight();
+            currentHighlighted = null;
+        }
     }
 
     private void HandleMovement()
