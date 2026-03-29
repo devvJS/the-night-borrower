@@ -66,11 +66,20 @@ public class PlayerHUD : MonoBehaviour
                                 && !playerController.IsInteracting
                                 && (inspectionSystem == null || !inspectionSystem.IsInspecting);
 
-        if (shouldShowPrompt && !wasShowingPrompt)
+        if (shouldShowPrompt)
         {
-            promptText.text = "E: Inspect";
-            promptObject.SetActive(true);
-            wasShowingPrompt = true;
+            if (playerController.CurrentHighlighted.IsDisplaced)
+                promptText.text = "E: Organize";
+            else if (playerController.CurrentHighlighted.IsInspectable)
+                promptText.text = "E: Inspect";
+            else
+                promptText.text = "E: Interact";
+
+            if (!wasShowingPrompt)
+            {
+                promptObject.SetActive(true);
+                wasShowingPrompt = true;
+            }
         }
         else if (!shouldShowPrompt && wasShowingPrompt)
         {

@@ -75,6 +75,8 @@ public class InspectionSystem : MonoBehaviour
             if (inspectAction.WasPressedThisFrame()
                 && playerController.CurrentHighlighted != null
                 && playerController.CurrentHighlighted.IsInspectable
+                && !playerController.CurrentHighlighted.IsDisplaced
+                && !playerController.CurrentHighlighted.IsOrganizing
                 && !playerController.IsInteracting
                 && transitionCoroutine == null)
             {

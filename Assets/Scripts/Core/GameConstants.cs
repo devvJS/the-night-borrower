@@ -70,4 +70,8 @@ public static class GameConstants
     public const float NotificationFadeOutDuration = 0.5f;
     public const float NotificationVerticalOffset = 60f;
     public const float NotificationPanelWidth = 350f;
+
+    // ─── Organize ───
+    public const float OrganizeAnimationDuration = 0.5f;
+    public const float OrganizePromptDistance = 3.0f;
 }

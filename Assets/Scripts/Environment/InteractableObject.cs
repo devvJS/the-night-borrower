@@ -28,8 +28,15 @@ public class InteractableObject : MonoBehaviour
     [SerializeField] [TextArea(2, 5)] private string clueText = "";
     [SerializeField] private string clueId = "";
 
+    [Header("Displacement")]
+    [SerializeField] private bool startDisplaced;
+    [SerializeField] private Vector3 homePosition;
+    [SerializeField] private Quaternion homeRotation = Quaternion.identity;
+
     private bool hasBeenInspected;
     private string lastInspectedState = "";
+    private bool isDisplaced;
+    private Coroutine organizeCoroutine;
 
     private Renderer objectRenderer;
     private Material materialInstance;
@@ -52,6 +59,8 @@ public class InteractableObject : MonoBehaviour
     public string ClueId => clueId;
     public bool HasClue => !string.IsNullOrEmpty(clueText);
     public bool HasBeenInspected => hasBeenInspected;
+    public bool IsDisplaced => isDisplaced;
+    public bool IsOrganizing => organizeCoroutine != null;
 
     public event Action<InteractableObject> OnInteracted;
 
@@ -61,6 +70,17 @@ public class InteractableObject : MonoBehaviour
     {
         objectRenderer = GetComponent<Renderer>();
         materialInstance = objectRenderer.material;
+
+        if (startDisplaced)
+        {
+            isDisplaced = true;
+        }
+        else
+        {
+            homePosition = transform.position;
+            homeRotation = transform.rotation;
+            isDisplaced = false;
+        }
     }
 
     private void OnDestroy()
@@ -168,6 +188,43 @@ public class InteractableObject : MonoBehaviour
     {
         Debug.Log($"Interacted with {objectId} ({objectType})");
         OnInteracted?.Invoke(this);
+    }
+
+    public void Organize()
+    {
+        if (!isDisplaced || organizeCoroutine != null) return;
+        organizeCoroutine = StartCoroutine(OrganizeAnimation());
+    }
+
+    public void Displace(Vector3 position, Quaternion rotation)
+    {
+        transform.position = position;
+        transform.rotation = rotation;
+        isDisplaced = true;
+        GameEvents.ObjectDisplaced(objectId, "");
+    }
+
+    private IEnumerator OrganizeAnimation()
+    {
+        Vector3 startPos = transform.position;
+        Quaternion startRot = transform.rotation;
+        float elapsed = 0f;
+
+        while (elapsed < GameConstants.OrganizeAnimationDuration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f,
+                elapsed / GameConstants.OrganizeAnimationDuration);
+            transform.position = Vector3.Lerp(startPos, homePosition, t);
+            transform.rotation = Quaternion.Slerp(startRot, homeRotation, t);
+            yield return null;
+        }
+
+        transform.position = homePosition;
+        transform.rotation = homeRotation;
+        isDisplaced = false;
+        organizeCoroutine = null;
+        GameEvents.ObjectRestored(objectId, "");
     }
 
     private static string FormatDisplayName(string id)

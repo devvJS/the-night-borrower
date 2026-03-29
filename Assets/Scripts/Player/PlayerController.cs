@@ -171,6 +171,13 @@ public class PlayerController : MonoBehaviour
         if (isInteracting) return;
         if (currentHighlighted == null) return;
 
+        // Displaced objects: organize takes priority over inspect
+        if (currentHighlighted.IsDisplaced && !currentHighlighted.IsOrganizing)
+        {
+            currentHighlighted.Organize();
+            return;
+        }
+
         // Inspectable objects are handled by InspectionSystem
         if (currentHighlighted.IsInspectable) return;
 
