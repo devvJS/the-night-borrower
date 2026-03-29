@@ -18,6 +18,11 @@ public class InteractableObject : MonoBehaviour
     [SerializeField] private bool isImportant;
     [SerializeField] private Color observationColor = new Color(0.6f, 0.8f, 1.0f);
 
+    [Header("Inspection")]
+    [SerializeField] private bool isInspectable = true;
+    [SerializeField] private Vector3 inspectionOffset = Vector3.zero;
+    [SerializeField] private float inspectionDistanceMultiplier = 3.0f;
+
     private Renderer objectRenderer;
     private Material materialInstance;
     private Coroutine fadeCoroutine;
@@ -30,6 +35,9 @@ public class InteractableObject : MonoBehaviour
     public bool IsHighlighted => isHighlighted;
     public bool IsImportant => isImportant;
     public bool IsObservationHighlighted => isObservationHighlighted;
+    public bool IsInspectable => isInspectable;
+    public Vector3 InspectionFocusPoint => transform.position + inspectionOffset;
+    public float InspectionDistance => GameConstants.InspectionViewDistance * inspectionDistanceMultiplier;
 
     public event Action<InteractableObject> OnInteracted;
 

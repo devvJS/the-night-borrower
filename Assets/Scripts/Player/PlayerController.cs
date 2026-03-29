@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     private InteractableObject currentHighlighted;
 
     private bool isInteracting;
+    private bool inputEnabled = true;
 
     public InteractableObject CurrentHighlighted => currentHighlighted;
     public bool IsInteracting => isInteracting;
@@ -112,6 +113,8 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMouseLook()
     {
+        if (!inputEnabled) return;
+
         // Mouse delta is already per-frame from the Input System — no deltaTime needed.
         // Sensitivity of 0.1 means ~0.1 degrees per pixel of mouse movement.
         float mouseX = lookInput.x * mouseSensitivity * GameConstants.MouseSensitivityScale;
@@ -128,6 +131,8 @@ public class PlayerController : MonoBehaviour
 
     private void HandleHighlighting()
     {
+        if (!inputEnabled) return;
+
         Ray ray = new Ray(cameraTransform.position, cameraTransform.forward);
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactableLayer))
@@ -161,17 +166,17 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInteraction()
     {
+        if (!inputEnabled) return;
         if (!interactAction.WasPressedThisFrame()) return;
         if (isInteracting) return;
         if (currentHighlighted == null) return;
 
+        // Inspectable objects are handled by InspectionSystem
+        if (currentHighlighted.IsInspectable) return;
+
         isInteracting = true;
         currentHighlighted.Interact();
         GameEvents.ObjectInspected(currentHighlighted.ObjectId);
-
-        // No real interaction flow yet — complete immediately.
-        // Future stories (2.2 Focused Inspection, 2.5 Organization) will call
-        // OnInteractionComplete() when their interaction flow finishes.
         OnInteractionComplete();
     }
 
@@ -180,8 +185,29 @@ public class PlayerController : MonoBehaviour
         isInteracting = false;
     }
 
+    public void SetInputEnabled(bool enabled)
+    {
+        inputEnabled = enabled;
+        if (enabled)
+        {
+            moveAction.Enable();
+            lookAction.Enable();
+            interactAction.Enable();
+            sprintAction.Enable();
+        }
+        else
+        {
+            moveAction.Disable();
+            lookAction.Disable();
+            interactAction.Disable();
+            sprintAction.Disable();
+        }
+    }
+
     private void HandleMovement()
     {
+        if (!inputEnabled) return;
+
         // Gravity
         if (characterController.isGrounded && verticalVelocity < 0f)
         {

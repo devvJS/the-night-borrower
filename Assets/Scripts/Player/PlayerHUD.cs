@@ -6,6 +6,7 @@ public class PlayerHUD : MonoBehaviour
 {
     [SerializeField] private PlayerController playerController;
 
+    private InspectionSystem inspectionSystem;
     private GameObject promptObject;
     private TextMeshProUGUI promptText;
     private GameObject crosshairObject;
@@ -27,6 +28,8 @@ public class PlayerHUD : MonoBehaviour
             return;
         }
 
+        inspectionSystem = playerController.GetComponent<InspectionSystem>();
+
         BuildHUD();
     }
 
@@ -47,7 +50,8 @@ public class PlayerHUD : MonoBehaviour
         if (playerController == null) return;
 
         bool shouldShowPrompt = playerController.CurrentHighlighted != null
-                                && !playerController.IsInteracting;
+                                && !playerController.IsInteracting
+                                && (inspectionSystem == null || !inspectionSystem.IsInspecting);
 
         if (shouldShowPrompt && !wasShowingPrompt)
         {

@@ -47,4 +47,11 @@ public static class GameConstants
     public const float ObservationHighlightIntensity = 0.35f;
     public const float ObservationFadeDuration = 0.4f;
     public const float ObservationViewAngle = 30f;
+
+    // ─── Inspection ───
+    public const float InspectionTransitionDuration = 0.4f;
+    public const float InspectionViewDistance = 0.6f;
+    public const float InspectionRotationSpeed = 3.0f;
+    public const float InspectionMaxPitch = 60f;
+    public const float InspectionFOV = 40f;
 }
