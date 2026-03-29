@@ -1,0 +1,200 @@
+# generated: 2026-03-28
+# last_updated: 2026-03-28
+# project: the-night-borrower
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-03-28
+last_updated: 2026-03-28
+project: the-night-borrower
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # ═══════════════════════════════════════════════════
+  # Phase 1 — Foundation
+  # ═══════════════════════════════════════════════════
+
+  epic-1: in-progress
+  1-1-player-movement: in-progress
+  1-2-object-highlighting: ready-for-dev
+  1-3-interact-with-objects: backlog
+  1-4-basic-lighting: backlog
+  1-5-performance-baseline: backlog
+  1-6-basic-ui-framework: backlog
+  1-7-save-load-placeholder: backlog
+  1-8-flashlight-toggle: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-observation-highlighting: backlog
+  2-2-focused-inspection-view: backlog
+  2-3-inspection-reveals-clues: backlog
+  2-4-auto-log-discoveries: backlog
+  2-5-organize-misplaced-objects: backlog
+  2-6-maintain-light-fixtures: backlog
+  2-7-inventory-system: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-notebook-review-entries: backlog
+  3-2-manual-notebook-notes: backlog
+  3-3-notebook-categorization: backlog
+  3-4-cross-reference-entries: backlog
+  3-5-notebook-persistence: backlog
+  3-6-office-pc-systems: backlog
+  epic-3-retrospective: optional
+
+  # ═══════════════════════════════════════════════════
+  # Phase 2 — Core Loop
+  # ═══════════════════════════════════════════════════
+
+  epic-4: backlog
+  4-1-day-phase-routine: backlog
+  4-2-day-night-transition: backlog
+  4-3-night-phase-tension: backlog
+  4-4-zone-stability-indicators: backlog
+  4-5-recovery-phase: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-environmental-persistence: backlog
+  5-2-natural-entropy: backlog
+  5-3-lighting-failure-persistence: backlog
+  5-4-object-displacement-tracking: backlog
+  5-5-flag-based-state-system: backlog
+  5-6-resource-degradation: backlog
+  5-7-dynamic-safe-zones: backlog
+  epic-5-retrospective: optional
+
+  epic-6: backlog
+  6-1-entity-presence-telegraphing: backlog
+  6-2-entity-visual-manifestation: backlog
+  6-3-entity-avoidance: backlog
+  6-4-entity-environmental-interference: backlog
+  6-5-soft-failure-consequences: backlog
+  6-6-complete-day-night-cycle: backlog
+  epic-6-retrospective: optional
+
+  # ═══════════════════════════════════════════════════
+  # Phase 3 — Feature Expansion
+  # ═══════════════════════════════════════════════════
+
+  epic-7: backlog
+  7-1-book-arrangement-puzzles: backlog
+  7-2-code-combination-puzzles: backlog
+  7-3-cross-reference-puzzles: backlog
+  7-4-in-world-hint-system: backlog
+  7-5-puzzle-failure-recovery: backlog
+  epic-7-retrospective: optional
+
+  epic-8: backlog
+  8-1-storage-room-unlock: backlog
+  8-2-basement-archives-unlock: backlog
+  8-3-upstairs-apartment-unlock: backlog
+  8-4-area-specific-behaviors: backlog
+  8-5-navigation-complexity: backlog
+  8-6-exterior-zones: backlog
+  epic-8-retrospective: optional
+
+  epic-9: backlog
+  9-1-ambient-audio-stability: backlog
+  9-2-entity-audio-anticipation: backlog
+  9-3-lighting-degradation: backlog
+  9-4-intentional-silence: backlog
+  9-5-coordinated-tension: backlog
+  9-6-adaptive-difficulty: backlog
+  epic-9-retrospective: optional
+
+  epic-11: backlog
+  11-1-serve-customers: backlog
+  11-2-text-dialogue-system: backlog
+  11-3-customer-movement: backlog
+  11-4-service-tasks: backlog
+  11-5-customer-economy: backlog
+  epic-11-retrospective: optional
+
+  # ═══════════════════════════════════════════════════
+  # Phase 4 — Narrative Integration
+  # ═══════════════════════════════════════════════════
+
+  epic-10: backlog
+  10-1-narrative-fragments: backlog
+  10-2-scripted-narrative-moments: backlog
+  10-3-ending-condition-tracking: backlog
+  10-4-multiple-endings: backlog
+  10-5-meaningful-bad-endings: backlog
+  epic-10-retrospective: optional
+
+  # ═══════════════════════════════════════════════════
+  # Phase 5 — Finalization
+  # ═══════════════════════════════════════════════════
+
+  epic-12: backlog
+  12-1-notebook-readability: backlog
+  12-2-accessibility-settings: backlog
+  12-3-reduced-flicker-mode: backlog
+  12-4-audio-subtitles: backlog
+  12-5-hud-interaction-prompts: backlog
+  epic-12-retrospective: optional
+
+  epic-13: backlog
+  13-1-lighting-finalization: backlog
+  13-2-entity-visual-polish: backlog
+  13-3-audio-balancing: backlog
+  13-4-music-layers-transitions: backlog
+  13-5-visual-degradation-verification: backlog
+  epic-13-retrospective: optional
+
+  epic-14: backlog
+  14-1-reliable-save-load: backlog
+  14-2-interrupted-save-recovery: backlog
+  14-3-save-load-full-testing: backlog
+  14-4-edge-case-handling: backlog
+  epic-14-retrospective: optional
+
+  epic-15: backlog
+  15-1-performance-profiling: backlog
+  15-2-asset-optimization: backlog
+  15-3-lighting-optimization: backlog
+  15-4-bug-fixing-pass: backlog
+  15-5-performance-target-validation: backlog
+  epic-15-retrospective: optional
+
+  epic-16: backlog
+  16-1-steam-build-upload: backlog
+  16-2-save-compatibility-testing: backlog
+  16-3-store-asset-preparation: backlog
+  16-4-final-build-submission: backlog
+  epic-16-retrospective: optional
