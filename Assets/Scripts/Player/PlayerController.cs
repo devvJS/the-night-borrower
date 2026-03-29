@@ -29,12 +29,16 @@ public class PlayerController : MonoBehaviour
     private float cameraPitch;
     private InteractableObject currentHighlighted;
 
+    private bool isInteracting;
+
     public InteractableObject CurrentHighlighted => currentHighlighted;
+    public bool IsInteracting => isInteracting;
 
     // Input Actions
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction sprintAction;
+    private InputAction interactAction;
 
     private void Awake()
     {
@@ -49,6 +53,7 @@ public class PlayerController : MonoBehaviour
         moveAction.Enable();
         lookAction.Enable();
         sprintAction.Enable();
+        interactAction.Enable();
     }
 
     private void OnDisable()
@@ -56,6 +61,7 @@ public class PlayerController : MonoBehaviour
         moveAction.Disable();
         lookAction.Disable();
         sprintAction.Disable();
+        interactAction.Disable();
     }
 
     private void OnDestroy()
@@ -63,6 +69,7 @@ public class PlayerController : MonoBehaviour
         moveAction?.Dispose();
         lookAction?.Dispose();
         sprintAction?.Dispose();
+        interactAction?.Dispose();
     }
 
     private void Start()
@@ -76,6 +83,7 @@ public class PlayerController : MonoBehaviour
         ReadInput();
         HandleMouseLook();
         HandleHighlighting();
+        HandleInteraction();
         HandleMovement();
     }
 
@@ -91,6 +99,8 @@ public class PlayerController : MonoBehaviour
         lookAction = new InputAction("Look", InputActionType.Value, "<Mouse>/delta");
 
         sprintAction = new InputAction("Sprint", InputActionType.Button, "<Keyboard>/leftShift");
+
+        interactAction = new InputAction("Interact", InputActionType.Button, "<Keyboard>/e");
     }
 
     private void ReadInput()
@@ -145,6 +155,27 @@ public class PlayerController : MonoBehaviour
             currentHighlighted.Unhighlight();
             currentHighlighted = null;
         }
+    }
+
+    private void HandleInteraction()
+    {
+        if (!interactAction.WasPressedThisFrame()) return;
+        if (isInteracting) return;
+        if (currentHighlighted == null) return;
+
+        isInteracting = true;
+        currentHighlighted.Interact();
+        GameEvents.ObjectInspected(currentHighlighted.ObjectId);
+
+        // No real interaction flow yet — complete immediately.
+        // Future stories (2.2 Focused Inspection, 2.5 Organization) will call
+        // OnInteractionComplete() when their interaction flow finishes.
+        OnInteractionComplete();
+    }
+
+    public void OnInteractionComplete()
+    {
+        isInteracting = false;
     }
 
     private void HandleMovement()

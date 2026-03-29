@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 
 [RequireComponent(typeof(Collider))]
@@ -21,6 +22,8 @@ public class InteractableObject : MonoBehaviour
     public string ObjectId => objectId;
     public new ObjectType Type => objectType;
     public bool IsHighlighted => isHighlighted;
+
+    public event Action<InteractableObject> OnInteracted;
 
     private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
@@ -60,6 +63,12 @@ public class InteractableObject : MonoBehaviour
             StopCoroutine(fadeCoroutine);
         }
         fadeCoroutine = StartCoroutine(FadeHighlight());
+    }
+
+    public void Interact()
+    {
+        Debug.Log($"Interacted with {objectId} ({objectType})");
+        OnInteracted?.Invoke(this);
     }
 
     private IEnumerator FadeHighlight()
