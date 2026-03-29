@@ -575,7 +575,7 @@ EndingVariables {
     patternsIdentified: int     // Environmental patterns correctly predicted
 
     // Narrative Discovery
-    loreFragmentsFound: int     // Out of total available (target: 30-50)
+    loreFragmentsFound: int     // Out of total available (budget: 35)
     npcConversations: int       // Unique NPC dialogue exchanges completed
     elderConversations: int     // Specifically Elder dialogue exchanges
     criticalReveals: int        // Key story beats discovered (out of ~8)
@@ -593,11 +593,11 @@ EndingVariables {
 | 1 | **Full Preservation** | knowledgeScore > 0.85 | nightsSurvived = 7 AND criticalReveals >= 7 | Best — Truth preserved |
 | 2 | **Understanding** | knowledgeScore > 0.7 | criticalReveals >= 5 AND elderConversations >= 4 | Good — Comprehension achieved |
 | 3 | **Survival Through Order** | averageStability > 0.7 | nightsSurvived >= 5 AND totalRepairs > 30 | Good — Control maintained |
-| 4 | **The Archivist** | loreFragmentsFound > 40 | manualNotesCount > 20 AND crossReferencesUsed > 10 | Bittersweet — Knowledge preserved but incomplete |
+| 4 | **The Archivist** | loreFragmentsFound >= 28 | manualNotesCount > 20 AND crossReferencesUsed > 10 | Bittersweet — Knowledge preserved but incomplete |
 | 5 | **Imperfect Memory** | knowledgeScore 0.4–0.7 | nightsSurvived >= 4 | Neutral — Partial truth |
 | 6 | **Pattern Breaker** | puzzlesSolved >= 10 | patternsIdentified >= 5 | Neutral — Mechanical mastery |
 | 7 | **The Borrower Remains** | nightsFailed >= 3 | averageStability < 0.4 | Dark — Entity wins through attrition |
-| 8 | **Lost Records** | knowledgeScore < 0.3 | loreFragmentsFound < 15 | Dark — Memory consumed |
+| 8 | **Lost Records** | knowledgeScore < 0.3 | loreFragmentsFound < 10 | Dark — Memory consumed |
 | 9 | **Collapse** | averageStability < 0.2 | nightsFailed >= 4 AND totalRepairs < 10 | Worst — Complete environmental failure |
 | 10 | **Forgotten** | knowledgeScore < 0.15 | nightsSurvived <= 2 AND criticalReveals <= 2 | Worst — Total memory erasure |
 

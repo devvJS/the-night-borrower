@@ -218,6 +218,7 @@ Assets/
 │   │   ├── EntityManager.cs           // MonoBehaviour, singleton
 │   │   ├── PuzzleManager.cs           // MonoBehaviour, singleton
 │   │   ├── EndingTracker.cs           // Plain class, no MonoBehaviour needed
+│   │   ├── NarrativeTriggerTracker.cs // Plain class, flag array + event subscriptions
 │   │   └── SaveManager.cs            // MonoBehaviour, singleton
 │   │
 │   ├── Data/
@@ -426,6 +427,7 @@ public class SaveData
     public List<ManualNoteData> manualNotes;
     public List<string> solvedPuzzles;
     public EndingVariablesData endingVars;
+    public bool[] narrativeTriggers;       // NarrativeTriggerTracker flag array
     public EntitySaveData entityState;
     public PlayerSaveData playerState;
 }
@@ -558,6 +560,7 @@ SaveManager.Save()
   → NotebookManager.GetSaveState()      → entries[] + manualNotes[]
   → PuzzleManager.GetSaveState()        → solvedPuzzles[]
   → EndingTracker.Variables              → endingVars
+  → NarrativeTriggerTracker.GetSaveState() → narrativeTriggers[]
   → DayNightCycleManager state          → dayState
   → EntityManager.GetSaveState()        → entityState
   → PlayerController state              → playerState
@@ -573,6 +576,7 @@ SaveManager.Load()
   → NotebookManager.LoadState(entries, manualNotes)
   → PuzzleManager.LoadState(solvedPuzzles)
   → EndingTracker.LoadState(endingVars)
+  → NarrativeTriggerTracker.LoadState(narrativeTriggers)
   → EntityManager.LoadState(entityState)
   → PlayerController.LoadState(playerState)
 ```
@@ -725,6 +729,7 @@ public enum LogCategory
     Puzzle      = 1 << 4,   // Solve/fail, prerequisite checks, entity interference
     Save        = 1 << 5,   // Save/load operations, file size, timing
     Ending      = 1 << 6,   // Variable accumulation, threshold checks
+    Narrative   = 1 << 7,   // Trigger flags, reveals, echoes, env storytelling
     All         = ~0
 }
 ```
@@ -866,7 +871,250 @@ DevLog.Log(LogCategory.Ending,
     $"survived={n}, puzzles={p}, reveals={r})");
 ```
 
+#### Narrative
+
+All narrative triggers log through a dedicated tracker that wraps the flag array. See **Narrative Trigger Debug Table** below for the full list.
+
+```csharp
+// In NarrativeTriggerTracker (see implementation pattern below):
+DevLog.Log(LogCategory.Narrative,
+    $"Trigger: {triggerId} fired (day={day}, phase={phase}, zone={zone})");
+
+// On echo activation:
+DevLog.Log(LogCategory.Narrative,
+    $"Echo: {echoId} activated (parent={parentReveal}, day={day})");
+
+// On failsafe firing:
+DevLog.Warn(LogCategory.Narrative,
+    $"Failsafe: {triggerId} forced (day={day}, reason={reason})");
+```
+
+### Narrative Trigger Debug Table
+
+#### System-Critical Environmental Moments (E01–E06)
+
+| Trigger ID | Debug Flag | Console Log Format | Overlay Text |
+|---|---|---|---|
+| E01 | `TRIGGER_E01_DISPLACEMENT_NOTICED` | `[Narrative] E01 fired: first displacement observed (day={day}, zone={zone}, object={objId})` | `E01 Displacement [DAY {d}]` |
+| E02 | `TRIGGER_E02_CORRUPTION_NOTICED` | `[Narrative] E02 fired: first entry corruption (day={day}, entry={entryId})` | `E02 Corruption [DAY {d}]` |
+| E03 | `TRIGGER_E03_LIGHT_WARNING` | `[Narrative] E03 fired: entity proximity flicker (day={day}, zone={zone}, entityState={state})` | `E03 LightWarn [DAY {d}]` |
+| E04 | `TRIGGER_E04_ENTROPY_REVERT` | `[Narrative] E04 fired: organized shelf reverted (day={day}, zone={zone}, object={objId})` | `E04 Revert [DAY {d}]` |
+| E05 | `TRIGGER_E05_CONTRADICTION` | `[Narrative] E05 fired: document contradicts entry (day={day}, doc={docId}, entry={entryId})` | `E05 Contradict [DAY {d}]` |
+| E05-FS | `TRIGGER_E05_FAILSAFE` | `[Narrative] E05 failsafe: manufactured contradiction placed (day={day})` | `E05 FAILSAFE [DAY {d}]` |
+| E06 | `TRIGGER_E06_LIGHT_DEGRADATION` | `[Narrative] E06 fired: first light failure (day={day}, zone={zone}, fixture={fixtureId})` | `E06 Degrade [DAY {d}]` |
+
+#### Key Reveals (R1–R8)
+
+| Trigger ID | Debug Flag | Console Log Format | Overlay Text |
+|---|---|---|---|
+| R1 | `TRIGGER_R1_FIRED` | `[Narrative] R1 fired: inventory losses revealed (day={day}, elderConvos={count})` | `R1 Inventory [DAY {d}]` |
+| R1-FS | `TRIGGER_R1_FAILSAFE` | `[Narrative] R1 failsafe: Elder approached player (day=2, elderConvos=0)` | `R1 FAILSAFE [DAY 2]` |
+| R2 | `TRIGGER_R2_FIRED` | `[Narrative] R2 fired: employee disappearance (day={day}, loreFound={count})` | `R2 Employee [DAY {d}]` |
+| R3 | `TRIGGER_R3_FIRED` | `[Narrative] R3 fired: feeds on records (day={day}, nightsSurvived={n}, corrupted={c})` | `R3 Records [DAY {d}]` |
+| R3-FS | `TRIGGER_R3_FAILSAFE` | `[Narrative] R3 failsafe: forced insight (day=5, corruption never observed)` | `R3 FAILSAFE [DAY 5]` |
+| R4 | `TRIGGER_R4_FIRED` | `[Narrative] R4 fired: indigenous warnings (day={day}, puzzle=P06)` | `R4 Warnings [DAY {d}]` |
+| R5 | `TRIGGER_R5_FIRED` | `[Narrative] R5 fired: Elder survived cycle (day={day}, elderConvos={count})` | `R5 Elder [DAY {d}]` |
+| R5-FS | `TRIGGER_R5_FAILSAFE` | `[Narrative] R5 failsafe: Elder initiated conversation (day=5, elderConvos<3)` | `R5 FAILSAFE [DAY 5]` |
+| R6 | `TRIGGER_R6_FIRED` | `[Narrative] R6 fired: containment revealed (day={day}, loreFound={count})` | `R6 Contain [DAY {d}]` |
+| R6-FS | `TRIGGER_R6_FAILSAFE` | `[Narrative] R6 failsafe: threshold lowered (day={day}, newThreshold={t}, loreFound={count})` | `R6 FAILSAFE [DAY {d}]` |
+| R7 | `TRIGGER_R7_FIRED` | `[Narrative] R7 fired: hiring deliberate (day={day}, puzzle=P10)` | `R7 Hiring [DAY {d}]` |
+| R8 | `TRIGGER_R8_FIRED` | `[Narrative] R8 fired: entity bound to word (day={day}, quality={full|partial}, elderConvos={count})` | `R8 Final [{quality}] [DAY {d}]` |
+
+#### Core Narrative Environmental Moments (E07–E11)
+
+| Trigger ID | Debug Flag | Console Log Format | Overlay Text |
+|---|---|---|---|
+| E07 | `TRIGGER_E07_PHOTO_INSPECTED` | `[Narrative] E07 fired: photo inspected (day={day}, scratchLevel={level}/7)` | `E07 Photo [DAY {d}]` |
+| E08 | `TRIGGER_E08_CABINET_OPENED` | `[Narrative] E08 fired: employee cabinet opened (day={day})` | `E08 Cabinet [DAY {d}]` |
+| E09 | `TRIGGER_E09_TALLY_INSPECTED` | `[Narrative] E09 fired: tally marks inspected (day={day})` | `E09 Tally [DAY {d}]` |
+| E10 | `TRIGGER_E10_APARTMENT_ENTERED` | `[Narrative] E10 fired: apartment belongings seen (day={day})` | `E10 Apartment [DAY {d}]` |
+| E11 | `TRIGGER_E11_HANDPRINT_INSPECTED` | `[Narrative] E11 fired: entity handprint inspected (day={day})` | `E11 Handprint [DAY {d}]` |
+
+#### Echo Activations
+
+| Trigger ID | Debug Flag | Console Log Format | Overlay Text |
+|---|---|---|---|
+| R1-A | `ECHO_R1A_SHELF_COUNT` | `[Narrative] Echo R1-A: shelf label inspected post-reveal (day={day})` | `~R1a` |
+| R1-B | `ECHO_R1B_CUSTOMER_LINE` | `[Narrative] Echo R1-B: customer Hemingway line delivered (day={day})` | `~R1b` |
+| R2-A | `ECHO_R2A_NAME_TAG` | `[Narrative] Echo R2-A: name tag inspected post-reveal (day={day})` | `~R2a` |
+| R2-B | `ECHO_R2B_NOTEBOOK_LINK` | `[Narrative] Echo R2-B: lore→R2 notebook links added (day={day}, linked={count})` | `~R2b` |
+| R3-A | `ECHO_R3A_BLANK_PAGES` | `[Narrative] Echo R3-A: blank book inspected post-reveal (day={day})` | `~R3a` |
+| R3-B | `ECHO_R3B_ENTITY_LINGER` | `[Narrative] Echo R3-B: entity shelf linger activated (day={day})` | `~R3b` |
+| R4-A | `ECHO_R4A_FOUNDATION` | `[Narrative] Echo R4-A: foundation symbol inspected (day={day})` | `~R4a` |
+| R5-A | `ECHO_R5A_TALLY_ELDER` | `[Narrative] Echo R5-A: tally marks re-inspected, Elder handwriting recognized (day={day})` | `~R5a` |
+| R5-B | `ECHO_R5B_ELDER_PREFIX` | `[Narrative] Echo R5-B: Elder "you look at me different" prefix delivered (day={day})` | `~R5b` |
+| R6-A | `ECHO_R6A_RESTORE_TEXT` | `[Narrative] Echo R6-A: one-time restore text variant used (day={day})` | `~R6a` |
+| R6-B | `ECHO_R6B_NOTEBOOK_LINK` | `[Narrative] Echo R6-B: incidents→R6 notebook links added (day={day}, linked={count})` | `~R6b` |
+| R7-A | `ECHO_R7A_SIGN_REMOVED` | `[Narrative] Echo R7-A: help wanted sign removed (day={day})` | `~R7a` |
+| R7-B | `ECHO_R7B_CUSTOMER_LINE` | `[Narrative] Echo R7-B: customer "old man asked about you" line delivered (day={day})` | `~R7b` |
+| R8-A | `ECHO_R8A_ENDING_QUALITY` | `[Narrative] Echo R8-A: ending text quality={full|partial} (reveals={count})` | `~R8a` |
+
+### Narrative Trigger Implementation Pattern
+
+A single tracker class manages all narrative flags. Not a MonoBehaviour — instantiated by a game manager, subscribes to events.
+
+```csharp
+public class NarrativeTriggerTracker
+{
+    // ─── Flag Storage ───
+    // One bool per trigger. Serialized in save data.
+    private bool[] triggerFired = new bool[32];  // E01-E06=0-5, R1-R8=6-13, E07-E11=14-18, echoes=19-31+
+
+    // Readable constants for indexing
+    private const int E01 = 0, E02 = 1, E03 = 2, E04 = 3, E05 = 4, E06 = 5;
+    private const int R1 = 6, R2 = 7, R3 = 8, R4 = 9, R5 = 10, R6 = 11, R7 = 12, R8 = 13;
+    private const int E07 = 14, E08 = 15, E09 = 16, E10 = 17, E11 = 18;
+    // Echoes: 19-31 (R1A=19, R1B=20, R2A=21, ...)
+
+    // ─── Public API ───
+    public bool HasFired(int triggerId) => triggerFired[triggerId];
+
+    public void Fire(int triggerId, string zone = "", string detail = "")
+    {
+        if (triggerFired[triggerId]) return;  // Already fired — skip
+        triggerFired[triggerId] = true;
+
+        int day = DayNightCycleManager.Instance.CurrentDay;
+        var phase = DayNightCycleManager.Instance.CurrentPhase;
+
+        DevLog.Log(LogCategory.Narrative,
+            $"Trigger: {GetName(triggerId)} fired (day={day}, phase={phase}, zone={zone}, detail={detail})");
+
+        GameEvents.NarrativeTriggerFired(triggerId);
+    }
+
+    public void FireFailsafe(int triggerId, string reason)
+    {
+        if (triggerFired[triggerId]) return;
+        triggerFired[triggerId] = true;
+
+        int day = DayNightCycleManager.Instance.CurrentDay;
+
+        DevLog.Warn(LogCategory.Narrative,
+            $"Failsafe: {GetName(triggerId)} forced (day={day}, reason={reason})");
+
+        GameEvents.NarrativeTriggerFired(triggerId);
+    }
+
+    public void FireEcho(int echoId, int parentReveal)
+    {
+        if (triggerFired[echoId]) return;
+        if (!triggerFired[parentReveal]) return;  // Parent hasn't fired — no echo
+        triggerFired[echoId] = true;
+
+        int day = DayNightCycleManager.Instance.CurrentDay;
+
+        DevLog.Log(LogCategory.Narrative,
+            $"Echo: {GetName(echoId)} activated (parent={GetName(parentReveal)}, day={day})");
+    }
+
+    // ─── Event Subscriptions ───
+    public void SubscribeToEvents()
+    {
+        GameEvents.OnObjectDisplaced += CheckE01;
+        GameEvents.OnEntryCorrupted += CheckE02;
+        GameEvents.OnEntityEnteredZone += CheckE03;
+        GameEvents.OnObjectDisplaced += CheckE04;
+        GameEvents.OnLightFailed += CheckE06;
+        GameEvents.OnPuzzleSolved += CheckPuzzleReveals;
+        GameEvents.OnDayStarted += CheckFailsafes;
+        GameEvents.OnDayStarted += CheckEchoActivations;
+        GameEvents.OnObjectInspected += CheckInspectionTriggers;
+    }
+
+    // ─── Example Handlers ───
+    private void CheckE01(string objId, string zoneId)
+    {
+        // E01: First displacement noticed (Day 2+)
+        if (DayNightCycleManager.Instance.CurrentDay >= 2)
+            Fire(E01, zoneId, objId);
+    }
+
+    private void CheckE04(string objId, string zoneId)
+    {
+        // E04: Object that player previously restored is displaced again
+        var obj = EnvironmentManager.Instance.GetObject(objId);
+        if (obj != null && obj.interactionCount > 0)  // Player has touched this before
+            Fire(E04, zoneId, objId);
+    }
+
+    private void CheckFailsafes(int day)
+    {
+        // R1 failsafe: Elder hasn't been spoken to by Day 2
+        if (day == 2 && !triggerFired[R1])
+            FireFailsafe(R1, "elderConversations == 0 at Day 2 start");
+
+        // E05 failsafe: No contradiction experienced by Day 4
+        if (day == 4 && !triggerFired[E05])
+            FireFailsafe(E05, "manufactured contradiction placed");
+
+        // R5 failsafe: Elder conversations < 3 by Day 5
+        if (day == 5 && !triggerFired[R5])
+        {
+            int convos = EndingTracker.Instance.Variables.elderConversations;
+            if (convos < 3)
+                FireFailsafe(R5, $"elderConversations={convos} < 3 at Day 5");
+        }
+
+        // R6 failsafe: Lore threshold adjustment
+        if (day == 6 && !triggerFired[R6])
+        {
+            int lore = EndingTracker.Instance.Variables.loreFragmentsFound;
+            if (lore >= 15)
+            {
+                Fire(R6, "", $"threshold lowered, lore={lore}");
+            }
+        }
+        if (day == 7 && !triggerFired[R6])
+        {
+            FireFailsafe(R6, "forced insight at Day 7 start");
+        }
+    }
+
+    private void CheckEchoActivations(int day)
+    {
+        // Echoes activate the day AFTER their parent reveal
+        // Environment echoes: activate pre-placed inactive props
+        // NPC echoes: flag NPC system to use conditional line variant
+        // Notebook echoes: add relatedEntries links
+
+        // Example: R1 echoes
+        if (triggerFired[R1] && day >= 2)
+        {
+            // R1-A: Activate shelf label prop
+            EnvironmentManager.Instance.ActivateEchoProp("r1a_shelf_label");
+            // R1-B is handled by NPC system checking echo flag before line delivery
+        }
+    }
+
+    // ─── Save/Load ───
+    public bool[] GetSaveState() => triggerFired;
+    public void LoadState(bool[] saved) => triggerFired = saved;
+
+    // ─── Name Lookup (for debug logs) ───
+    private string GetName(int id) => id switch
+    {
+        0 => "E01", 1 => "E02", 2 => "E03", 3 => "E04", 4 => "E05", 5 => "E06",
+        6 => "R1", 7 => "R2", 8 => "R3", 9 => "R4", 10 => "R5", 11 => "R6", 12 => "R7", 13 => "R8",
+        14 => "E07", 15 => "E08", 16 => "E09", 17 => "E10", 18 => "E11",
+        19 => "R1-A", 20 => "R1-B", 21 => "R2-A", 22 => "R2-B",
+        23 => "R3-A", 24 => "R3-B", 25 => "R4-A",
+        26 => "R5-A", 27 => "R5-B", 28 => "R6-A", 29 => "R6-B",
+        30 => "R7-A", 31 => "R7-B",
+        _ => $"UNKNOWN_{id}"
+    };
+}
+```
+
 ### Integration with GameEvents
+
+Add one new event to the event bus:
+
+```csharp
+// In GameEvents.cs — add to Narrative section
+public static event Action<int> OnNarrativeTriggerFired;  // (triggerId)
+public static void NarrativeTriggerFired(int id) => OnNarrativeTriggerFired?.Invoke(id);
+```
 
 Rather than adding log calls inside every manager, a single `DebugEventLogger` subscribes to the event bus and logs cross-system flow. This keeps debug code out of game logic entirely.
 
@@ -883,6 +1131,7 @@ public class DebugEventLogger : MonoBehaviour
         GameEvents.OnObjectDisplaced += LogDisplace;
         GameEvents.OnPuzzleSolved += LogPuzzle;
         GameEvents.OnPlayerCaught += LogCaught;
+        GameEvents.OnNarrativeTriggerFired += LogNarrative;
         // ... subscribe to all events worth tracing
     }
 
@@ -893,6 +1142,7 @@ public class DebugEventLogger : MonoBehaviour
         GameEvents.OnObjectDisplaced -= LogDisplace;
         GameEvents.OnPuzzleSolved -= LogPuzzle;
         GameEvents.OnPlayerCaught -= LogCaught;
+        GameEvents.OnNarrativeTriggerFired -= LogNarrative;
     }
 
     void LogPhase(GamePhase old, GamePhase next)
@@ -909,6 +1159,9 @@ public class DebugEventLogger : MonoBehaviour
 
     void LogCaught()
         => DevLog.Warn(LogCategory.Entity, "Player caught");
+
+    void LogNarrative(int triggerId)
+        => DevLog.Log(LogCategory.Narrative, $"Trigger fired: id={triggerId}");
 }
 ```
 
@@ -929,7 +1182,7 @@ public class DebugOverlay : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.F1)) showOverlay = !showOverlay;
-        if (Input.GetKeyDown(KeyCode.F2)) activePanel = (activePanel + 1) % 4;
+        if (Input.GetKeyDown(KeyCode.F2)) activePanel = (activePanel + 1) % 5;
         if (Input.GetKeyDown(KeyCode.F3)) ToggleLogCategory();
     }
 
@@ -942,6 +1195,7 @@ public class DebugOverlay : MonoBehaviour
             case 1: DrawEntityPanel(); break;
             case 2: DrawZonePanel(); break;
             case 3: DrawEndingPanel(); break;
+            case 4: DrawNarrativePanel(); break;
         }
     }
 }
@@ -978,6 +1232,19 @@ puzzles=6/12  reveals=4/8  notes=12
 Current best: #5 Imperfect Memory
 Next unlock:  #2 Understanding (need reveals>=5)
 ```
+
+**Panel 4 — Narrative** (top-left)
+```
+SYSTEM-CRITICAL     E01[✓] E02[✓] E03[✓] E04[ ] E05[FS] E06[✓]
+REVEALS             R1[✓]  R2[✓]  R3[✓]  R4[ ]  R5[ ]   R6[ ]  R7[ ] R8[ ]
+CORE NARRATIVE      E07[✓] E08[ ] E09[✓] E10[ ] E11[ ]
+ECHOES              ~R1a[✓] ~R1b[✓] ~R2a[ ] ~R2b[✓] ~R3a[✓] ~R3b[✓]
+---
+Last fired: E03 (Day 3, Night, MainFloor)
+Failsafes: E05 forced Day 4
+Pending:    R4 (needs P06) | R5 (needs elderConvos>=3, current=2)
+```
+`[✓]` = fired, `[ ]` = pending, `[FS]` = fired via failsafe
 
 ### Project Layout Addition
 
