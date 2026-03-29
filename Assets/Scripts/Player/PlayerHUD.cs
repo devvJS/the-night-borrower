@@ -7,6 +7,7 @@ public class PlayerHUD : MonoBehaviour
     [SerializeField] private PlayerController playerController;
 
     private InspectionSystem inspectionSystem;
+    private InspectionUI inspectionUI;
     private GameObject promptObject;
     private TextMeshProUGUI promptText;
     private GameObject crosshairObject;
@@ -14,6 +15,8 @@ public class PlayerHUD : MonoBehaviour
     private Sprite crosshairSprite;
 
     private bool wasShowingPrompt;
+
+    public InspectionUI InspectionUI => inspectionUI;
 
     private void Awake()
     {
@@ -145,5 +148,9 @@ public class PlayerHUD : MonoBehaviour
         promptRect.sizeDelta = new Vector2(300, 50);
 
         promptObject.SetActive(false);
+
+        // Create Inspection UI
+        inspectionUI = gameObject.AddComponent<InspectionUI>();
+        inspectionUI.Initialize(canvas);
     }
 }

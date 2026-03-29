@@ -19,6 +19,7 @@ public class InspectionSystem : MonoBehaviour
 
     private ObservationSystem observationSystem;
     private PlayerFlashlight playerFlashlight;
+    private PlayerHUD playerHUD;
 
     private InputAction inspectAction;
     private InputAction exitAction;
@@ -39,6 +40,7 @@ public class InspectionSystem : MonoBehaviour
 
         observationSystem = GetComponent<ObservationSystem>();
         playerFlashlight = GetComponent<PlayerFlashlight>();
+        playerHUD = FindObjectOfType<PlayerHUD>();
 
         inspectAction = new InputAction("Inspect", InputActionType.Button, "<Keyboard>/e");
         exitAction = new InputAction("ExitInspection", InputActionType.Button, "<Keyboard>/escape");
@@ -117,12 +119,25 @@ public class InspectionSystem : MonoBehaviour
 
         GameEvents.ObjectInspected(inspectedObject.ObjectId);
 
+        InspectionResult result = inspectedObject.Inspect();
+
+        if (result.isFirstInspection && result.hasClue && !string.IsNullOrEmpty(result.clueId))
+        {
+            GameEvents.ClueDiscovered(result.clueId, inspectedObject.ObjectId);
+        }
+
+        if (playerHUD != null)
+            playerHUD.InspectionUI.Show(result);
+
         transitionCoroutine = StartCoroutine(
             TransitionCamera(targetPos, targetRot, GameConstants.InspectionFOV, true));
     }
 
     private void ExitInspection()
     {
+        if (playerHUD != null)
+            playerHUD.InspectionUI.Hide();
+
         Vector3 worldTargetPos = cameraTransform.parent.TransformPoint(originalCameraLocalPos);
         Quaternion worldTargetRot = cameraTransform.parent.rotation * originalCameraLocalRot;
 

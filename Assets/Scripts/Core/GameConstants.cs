@@ -54,4 +54,12 @@ public static class GameConstants
     public const float InspectionRotationSpeed = 3.0f;
     public const float InspectionMaxPitch = 60f;
     public const float InspectionFOV = 40f;
+
+    // ─── Inspection UI ───
+    public const float InspectionPanelWidth = 400f;
+    public const float InspectionPanelPadding = 20f;
+    public const float InspectionTitleFontSize = 22f;
+    public const float InspectionBodyFontSize = 16f;
+    public const float InspectionPanelFadeDuration = 0.3f;
+    public const float InspectionChangedBadgeFontSize = 14f;
 }

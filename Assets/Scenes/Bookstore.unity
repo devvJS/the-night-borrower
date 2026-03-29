@@ -335,6 +335,7 @@ GameObject:
   - component: {fileID: 304}
   - component: {fileID: 305}
   - component: {fileID: 306}
+  - component: {fileID: 307}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -434,6 +435,20 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b668f0127b6994ead65152efa669cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraTransform: {fileID: 0}
+  playerController: {fileID: 0}
 --- !u!1 &310
 GameObject:
   m_ObjectHideFlags: 0
@@ -1490,6 +1505,12 @@ MonoBehaviour:
   emissionIntensity: 0.3
   isImportant: 0
   observationColor: {r: 0.6, g: 0.8, b: 1, a: 1}
+  isInspectable: 1
+  inspectionOffset: {x: 0, y: 0, z: 0}
+  inspectionDistanceMultiplier: 1
+  objectDescription: 
+  clueText: 
+  clueId: 
 --- !u!1 &1300
 GameObject:
   m_ObjectHideFlags: 0
@@ -1614,6 +1635,12 @@ MonoBehaviour:
   emissionIntensity: 0.3
   isImportant: 1
   observationColor: {r: 0.6, g: 0.8, b: 1, a: 1}
+  isInspectable: 1
+  inspectionOffset: {x: 0, y: 0, z: 0}
+  inspectionDistanceMultiplier: 1
+  objectDescription: 
+  clueText: 
+  clueId: 
 --- !u!1 &1400
 GameObject:
   m_ObjectHideFlags: 0
@@ -1738,6 +1765,12 @@ MonoBehaviour:
   emissionIntensity: 0.3
   isImportant: 1
   observationColor: {r: 0.6, g: 0.8, b: 1, a: 1}
+  isInspectable: 1
+  inspectionOffset: {x: 0, y: 0, z: 0}
+  inspectionDistanceMultiplier: 1
+  objectDescription: 
+  clueText: 
+  clueId: 
 --- !u!1 &1500
 GameObject:
   m_ObjectHideFlags: 0

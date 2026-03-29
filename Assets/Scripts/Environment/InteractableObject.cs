@@ -23,6 +23,14 @@ public class InteractableObject : MonoBehaviour
     [SerializeField] private Vector3 inspectionOffset = Vector3.zero;
     [SerializeField] private float inspectionDistanceMultiplier = 3.0f;
 
+    [Header("Clue Data")]
+    [SerializeField] [TextArea(2, 5)] private string objectDescription = "";
+    [SerializeField] [TextArea(2, 5)] private string clueText = "";
+    [SerializeField] private string clueId = "";
+
+    private bool hasBeenInspected;
+    private string lastInspectedState = "";
+
     private Renderer objectRenderer;
     private Material materialInstance;
     private Coroutine fadeCoroutine;
@@ -38,6 +46,11 @@ public class InteractableObject : MonoBehaviour
     public bool IsInspectable => isInspectable;
     public Vector3 InspectionFocusPoint => transform.position + inspectionOffset;
     public float InspectionDistance => GameConstants.InspectionViewDistance * inspectionDistanceMultiplier;
+    public string ObjectDescription => objectDescription;
+    public string ClueText => clueText;
+    public string ClueId => clueId;
+    public bool HasClue => !string.IsNullOrEmpty(clueText);
+    public bool HasBeenInspected => hasBeenInspected;
 
     public event Action<InteractableObject> OnInteracted;
 
@@ -122,10 +135,50 @@ public class InteractableObject : MonoBehaviour
         observationFadeCoroutine = StartCoroutine(FadeObservationHighlight());
     }
 
+    public string GetCurrentState()
+    {
+        return $"{objectType}|{isImportant}|{objectDescription}";
+    }
+
+    public InspectionResult Inspect()
+    {
+        string currentState = GetCurrentState();
+        bool isFirst = !hasBeenInspected;
+        bool stateChanged = !isFirst && currentState != lastInspectedState;
+
+        var result = new InspectionResult
+        {
+            title = FormatDisplayName(objectId),
+            description = objectDescription,
+            clue = HasClue ? clueText : "",
+            clueId = clueId,
+            isFirstInspection = isFirst,
+            hasStateChanged = stateChanged,
+            hasClue = HasClue
+        };
+
+        hasBeenInspected = true;
+        lastInspectedState = currentState;
+
+        return result;
+    }
+
     public void Interact()
     {
         Debug.Log($"Interacted with {objectId} ({objectType})");
         OnInteracted?.Invoke(this);
+    }
+
+    private static string FormatDisplayName(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return "Unknown Object";
+        var parts = id.Split('_');
+        for (int i = 0; i < parts.Length; i++)
+        {
+            if (parts[i].Length > 0)
+                parts[i] = char.ToUpper(parts[i][0]) + parts[i].Substring(1);
+        }
+        return string.Join(" ", parts);
     }
 
     private IEnumerator FadeHighlight()
