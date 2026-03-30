@@ -1,5 +1,5 @@
 # generated: 2026-03-28
-# last_updated: 2026-03-29
+# last_updated: 2026-03-30
 # project: the-night-borrower
 # project_key: NOKEY
 # tracking_system: file-system
@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-03-28
-last_updated: 2026-03-29
+last_updated: 2026-03-30
 project: the-night-borrower
 project_key: NOKEY
 tracking_system: file-system
@@ -57,7 +57,7 @@ development_status:
   1-8-flashlight-toggle: done
   epic-1-retrospective: done
 
-  epic-2: in-progress
+  epic-2: done
   2-1-observation-highlighting: done
   2-2-focused-inspection-view: done
   2-3-inspection-reveals-clues: done
@@ -65,7 +65,7 @@ development_status:
   2-5-organize-misplaced-objects: done
   2-6-maintain-light-fixtures: done
   2-7-inventory-system: done
-  epic-2-retrospective: optional
+  epic-2-retrospective: done
 
   epic-3: backlog
   3-1-notebook-review-entries: backlog
