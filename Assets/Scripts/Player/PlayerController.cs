@@ -31,11 +31,11 @@ public class PlayerController : MonoBehaviour
 
     private bool isInteracting;
     private bool inputEnabled = true;
-    private int spareBulbs = GameConstants.StartingBulbCount;
+    private PlayerInventory inventory;
 
     public InteractableObject CurrentHighlighted => currentHighlighted;
     public bool IsInteracting => isInteracting;
-    public int SpareBulbs => spareBulbs;
+    public PlayerInventory Inventory => inventory;
 
     // Input Actions
     private InputAction moveAction;
@@ -47,6 +47,7 @@ public class PlayerController : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         cameraTransform = GetComponentInChildren<Camera>().transform;
+        inventory = GetComponent<PlayerInventory>();
 
         SetupInputActions();
     }
@@ -185,9 +186,30 @@ public class PlayerController : MonoBehaviour
             && !currentHighlighted.Fixture.IsFunctional
             && !currentHighlighted.Fixture.IsRepairing)
         {
-            if (TryUseBulb())
+            if (inventory != null && inventory.TryUseItem(ItemType.SpareBulb))
             {
                 currentHighlighted.Fixture.Repair();
+            }
+            return;
+        }
+
+        // Pickup items: collect into inventory
+        if (currentHighlighted.Pickup != null)
+        {
+            if (inventory == null) return;
+
+            if (inventory.TryAddItem(
+                currentHighlighted.Pickup.Type, currentHighlighted.Pickup.Amount))
+            {
+                currentHighlighted.Pickup.Collect();
+                currentHighlighted.Unhighlight();
+                currentHighlighted = null;
+                GameEvents.ObjectHighlighted(null);
+            }
+            else
+            {
+                var hud = FindObjectOfType<PlayerHUD>();
+                hud?.InventoryUI?.ShowFullFeedback();
             }
             return;
         }
@@ -204,13 +226,6 @@ public class PlayerController : MonoBehaviour
     public void OnInteractionComplete()
     {
         isInteracting = false;
-    }
-
-    public bool TryUseBulb()
-    {
-        if (spareBulbs <= 0) return false;
-        spareBulbs--;
-        return true;
     }
 
     public void SetInputEnabled(bool enabled)

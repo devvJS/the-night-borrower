@@ -10,6 +10,8 @@ public class PlayerHUD : MonoBehaviour
     private InspectionUI inspectionUI;
     private DiscoveryNotificationUI discoveryNotificationUI;
     private DiscoveryLog discoveryLog;
+    private InventoryUI inventoryUI;
+    private PlayerInventory playerInventory;
     private GameObject promptObject;
     private TextMeshProUGUI promptText;
     private GameObject crosshairObject;
@@ -20,6 +22,7 @@ public class PlayerHUD : MonoBehaviour
 
     public InspectionUI InspectionUI => inspectionUI;
     public DiscoveryNotificationUI DiscoveryNotificationUI => discoveryNotificationUI;
+    public InventoryUI InventoryUI => inventoryUI;
 
     private void Awake()
     {
@@ -35,6 +38,7 @@ public class PlayerHUD : MonoBehaviour
         }
 
         inspectionSystem = playerController.GetComponent<InspectionSystem>();
+        playerInventory = playerController.GetComponent<PlayerInventory>();
 
         BuildHUD();
 
@@ -47,6 +51,8 @@ public class PlayerHUD : MonoBehaviour
     {
         if (discoveryLog != null)
             discoveryLog.OnDiscoveryLogged -= discoveryNotificationUI.ShowNotification;
+
+        inventoryUI?.Cleanup();
 
         if (crosshairSprite != null)
         {
@@ -74,11 +80,15 @@ public class PlayerHUD : MonoBehaviour
                      && !playerController.CurrentHighlighted.Fixture.IsFunctional
                      && !playerController.CurrentHighlighted.Fixture.IsRepairing)
             {
-                if (playerController.SpareBulbs > 0)
+                int bulbCount = playerInventory != null
+                    ? playerInventory.GetItemCount(ItemType.SpareBulb) : 0;
+                if (bulbCount > 0)
                     promptText.text = "E: Replace Bulb";
                 else
                     promptText.text = "Needs Bulb";
             }
+            else if (playerController.CurrentHighlighted.Pickup != null)
+                promptText.text = "E: Pick Up";
             else if (playerController.CurrentHighlighted.IsInspectable)
                 promptText.text = "E: Inspect";
             else
@@ -184,5 +194,12 @@ public class PlayerHUD : MonoBehaviour
         // Create Discovery Notification UI
         discoveryNotificationUI = gameObject.AddComponent<DiscoveryNotificationUI>();
         discoveryNotificationUI.Initialize(canvas);
+
+        // Create Inventory UI
+        if (playerInventory != null)
+        {
+            inventoryUI = gameObject.AddComponent<InventoryUI>();
+            inventoryUI.Initialize(canvas, playerInventory);
+        }
     }
 }

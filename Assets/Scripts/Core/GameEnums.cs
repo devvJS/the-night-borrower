@@ -7,6 +7,7 @@ public enum EntryCategory { Observation, Pattern, Clue, Record, Personal }
 public enum PuzzleType { BookArrangement, CrossReference, Pattern, Code, Environmental }
 public enum Difficulty { Simple, Moderate, Complex }
 public enum SlotType { Shelf, Table, Wall, Floor, FixtureMount }
+public enum ItemType { SpareBulb, RepairTool }
 public enum ZoneId { MainFloor, Office, Storage, Basement, Apartment, Street, Alley, Forest, Rail }
 
 [System.Flags]

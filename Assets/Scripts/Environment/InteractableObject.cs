@@ -38,6 +38,7 @@ public class InteractableObject : MonoBehaviour
     private bool isDisplaced;
     private Coroutine organizeCoroutine;
     private LightFixture lightFixture;
+    private PickupItem pickupItem;
 
     private Renderer objectRenderer;
     private Material materialInstance;
@@ -63,6 +64,7 @@ public class InteractableObject : MonoBehaviour
     public bool IsDisplaced => isDisplaced;
     public bool IsOrganizing => organizeCoroutine != null;
     public LightFixture Fixture => lightFixture;
+    public PickupItem Pickup => pickupItem;
 
     public event Action<InteractableObject> OnInteracted;
 
@@ -85,6 +87,7 @@ public class InteractableObject : MonoBehaviour
         }
 
         lightFixture = GetComponent<LightFixture>();
+        pickupItem = GetComponent<PickupItem>();
     }
 
     private void OnDestroy()

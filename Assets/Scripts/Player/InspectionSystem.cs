@@ -79,6 +79,7 @@ public class InspectionSystem : MonoBehaviour
                 && !playerController.CurrentHighlighted.IsOrganizing
                 && !(playerController.CurrentHighlighted.Fixture != null
                      && !playerController.CurrentHighlighted.Fixture.IsFunctional)
+                && playerController.CurrentHighlighted.Pickup == null
                 && !playerController.IsInteracting
                 && transitionCoroutine == null)
             {

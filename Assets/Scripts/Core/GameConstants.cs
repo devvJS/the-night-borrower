@@ -78,4 +78,12 @@ public static class GameConstants
     // ─── Light Fixtures ───
     public const float BulbReplaceAnimationDuration = 0.8f;
     public const int StartingBulbCount = 3;
+
+    // ─── Inventory ───
+    public const int InventorySlotCount = 3;
+    public const int MaxStackSize = 5;
+    public const float InventorySlotSize = 50f;
+    public const float InventorySlotSpacing = 8f;
+    public const float InventorySlotAlpha = 0.7f;
+    public const float InventoryFullFeedbackDuration = 1.5f;
 }
